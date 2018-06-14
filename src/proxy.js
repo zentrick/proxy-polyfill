@@ -117,35 +117,52 @@ module.exports = function proxyPolyfill() {
       this[prop] = value;
     };
 
-    // Clone direct properties (i.e., not part of a prototype).
-    const propertyNames = Object.getOwnPropertyNames(target);
-    const propertyMap = {};
-    propertyNames.forEach(function(prop) {
-      if ((isMethod || isArray) && prop in proxy) {
-        return;  // ignore properties already here, e.g. 'bind', 'prototype' etc
-      }
-      const real = Object.getOwnPropertyDescriptor(target, prop);
-      const desc = {
-        enumerable: !!real.enumerable,
-        get: getter.bind(target, prop),
-        set: setter.bind(target, prop),
-      };
-      Object.defineProperty(proxy, prop, desc);
-      propertyMap[prop] = true;
-    });
-
     // Set the prototype, or clone all prototype methods (always required if a getter is provided).
     // TODO(samthor): We don't allow prototype methods to be set. It's (even more) awkward.
     // An alternative here would be to _just_ clone methods to keep behavior consistent.
-    let prototypeOk = true;
+    let getPrototypeOf = null
     if (Object.setPrototypeOf) {
-      Object.setPrototypeOf(proxy, Object.getPrototypeOf(target));
+      getPrototypeOf = Object.getPrototypeOf.bind(Object)
+      Object.setPrototypeOf(proxy, getPrototypeOf(target));
     } else if (proxy.__proto__) {
-      proxy.__proto__ = target.__proto__;
-    } else {
-      prototypeOk = false;
+      getPrototypeOf = obj => obj.__proto__
+      proxy.__proto__ = getPrototypeOf(target);
     }
-    if (handler.get || !prototypeOk) {
+
+    const propertyMap = {};
+
+    const walkPrototype = (proto) => {
+      Object.getOwnPropertyNames(proto).forEach(prop => {
+        if (propertyMap[prop] || ((isMethod || isArray) && prop in proxy)) {
+          // ignore properties we already processed along the prototype chain
+          // also ignore properties already here, e.g. 'bind', 'prototype' etc
+          return;
+        }
+        const real = Object.getOwnPropertyDescriptor(proto, prop);
+        const desc = {
+          enumerable: !!real.enumerable,
+          get: getter.bind(target, prop),
+          set: setter.bind(target, prop),
+        };
+
+        Object.defineProperty(proxy, prop, desc);
+
+        propertyMap[prop] = true;
+      })
+
+
+      if (getPrototypeOf != null && (handler.get || handler.set)) {
+        proto = getPrototypeOf(proto)
+
+        if (proto != null) {
+          walkPrototype(proto)
+        }
+      }
+    }
+
+    walkPrototype(target)
+
+    if (getPrototypeOf == null) {
       for (let k in target) {
         if (propertyMap[k]) {
           continue;

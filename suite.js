@@ -249,10 +249,13 @@ module.exports = (testCase) => function(scope) {
       });
 
       test('trap instance methods', function() {
-        var cls = function() {
-          this.y = 1;
-        };
-        cls.prototype.x = function() {};
+        class cls {
+          constructor () {
+            this.y = 1;
+          }
+
+          x () { }
+        }
 
         var inst = new cls();
         var found;
