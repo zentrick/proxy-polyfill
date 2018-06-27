@@ -2,9 +2,9 @@
   "name": "@zentrick/proxy-polyfill",
   "version": "0.4.0",
   "description": "Polyfill for the Proxy object",
-  "main": "proxy.min.js",
-  "module": "./src/index.js",
-  "jsnext:main": "./src/index.js",
+  "main": "./src/proxy.js",
+  "module": "./src/proxy.js",
+  "jsnext:main": "./src/proxy.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/GoogleChrome/proxy-polyfill.git"
@@ -22,13 +22,17 @@
   },
   "homepage": "https://github.com/GoogleChrome/proxy-polyfill#readme",
   "devDependencies": {
+    "@babel/core": "^7.0.0-beta.51",
+    "@babel/plugin-transform-modules-commonjs": "^7.0.0-beta.51",
+    "@babel/register": "^7.0.0-beta.51",
     "chai": "^4.1.2",
     "google-closure-compiler": "^20180204.0.0",
     "mocha": "^3.5.3"
   },
   "scripts": {
-    "build": "node build.js",
-    "pretest": "npm run build",
     "test": "mocha"
-  }
+  },
+  "files": [
+    "src/"
+  ]
 }

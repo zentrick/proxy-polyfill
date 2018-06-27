@@ -18,6 +18,10 @@
  * @fileoverview Test runner for proxy-polyfill inside a Node environment.
  */
 
+ require('@babel/register')({
+   plugins: [require.resolve('@babel/plugin-transform-modules-commonjs')]
+ })
+
 const mocha = require('mocha');
 const chai = require('chai');
 
@@ -30,9 +34,6 @@ global.Proxy = undefined;
 
 const testSuite = require('./suite.js');
 
-require('./src/index.js');  // include actual proxy
-testSuite();  // run tests
+global.Proxy = require('./src/proxy.js').default;  // include actual proxy
 
-global.Proxy = undefined;
-require('./proxy.min.js');  // also, test output
 testSuite();  // run tests
