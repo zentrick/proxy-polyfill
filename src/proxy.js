@@ -170,8 +170,7 @@ ProxyPolyfill = function(target, handler) {
     }
   }
 
-  // The Proxy polyfill cannot handle adding new properties. Seal the target and proxy.
-  Object.seal(target);
+  // The Proxy polyfill cannot handle adding new properties. Seal the proxy.
   Object.seal(proxy);
 
   return proxy;  // nb. if isMethod is true, proxy != this
