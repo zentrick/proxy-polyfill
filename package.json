@@ -1,6 +1,6 @@
 {
   "name": "@zentrick/proxy-polyfill",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Polyfill for the Proxy object",
   "main": "./src/proxy.js",
   "module": "./src/proxy.js",
