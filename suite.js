@@ -297,11 +297,8 @@ module.exports = (testCase) => function(scope) {
       var testObj = buildObject();
       assert.isNotSealed(testObj);
       var p = new Proxy(testObj, {});
-      assert.isSealed(testObj);
       assert.isSealed(p, 'proxy should also be sealed');
-
-      new Proxy(testObj, {});
-      assert.isSealed(testObj);
+      assert.isNotSealed(testObj);
 
       var pp = new Proxy(p, {});
       assert.isSealed(p);
@@ -315,7 +312,6 @@ module.exports = (testCase) => function(scope) {
       var testArray = [7,8,9];
       assert.isNotSealed(testArray);
       var p = new Proxy(testArray, {});
-      assert.isSealed(testArray);
       assert.isSealed(p, 'proxy should also be sealed');
       assert.throws(function() {
         p.push(1);
