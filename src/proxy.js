@@ -181,4 +181,4 @@ ProxyPolyfill.revocable = function(target, handler) {
   return { 'proxy': p, 'revoke': lastRevokeFn };
 };
 
-export default ProxyPolyfill;
+module.exports = ProxyPolyfill;
